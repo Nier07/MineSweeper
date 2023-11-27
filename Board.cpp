@@ -17,9 +17,12 @@ Board::Board(Difficulty dif) {
 
 //custom difficulty takes user input
 Board::Board(int rows, int cols, int mines) {
-	this->rows = rows;
-	this->cols = cols;
-	this->size = rows * cols;
+	if (rows > 100) this->rows = 100;
+	else this->rows = rows;
+	if (cols > 70) this->cols = 70;
+	else this->cols = cols;
+
+	this->size = this->rows * this->cols;
 	if (mines > this->size)this->mines = this->size;
 	else this->mines = mines;
 	this->dif = custom;

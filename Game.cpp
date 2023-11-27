@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "UI.h"
 #include <sstream>
+#include <iomanip>
 
 Game::Game() {
 	this->systemExit = false;
@@ -55,6 +56,7 @@ void Game::swapScreen(CurrentScreen screen) {
 				consoleInput();
 
 				if (userPos[0] == 1) screen = mainMenu;
+				if (userPos[0] == 2) screen = difficultySelect;
 				break;
 
 			case difficultySelect:
@@ -85,8 +87,6 @@ void Game::swapScreen(CurrentScreen screen) {
 				break;
 			case gameScreen:
 				playGame(this->board);
-				//temp
-				systemExit = true;
 				break;
 			case loseScreen:
 				UI::loseScreen();
@@ -104,19 +104,36 @@ void Game::swapScreen(CurrentScreen screen) {
 }
 
 void Game::playGame(const Board& game) {
-    for (const auto& node : game.board) {
-        if (node->pos % game.cols == 0) std::cout << std::endl;
-        std::cout << std::to_string(node->type) << " ";
+	std::cout << std::setw(3) << std::left << "    " ;
+
+	for (int i = 1; i < game.cols + 1; i++) {
+        std::cout << std::setw(3) << std::left << i ;
     }
 
     std::cout << std::endl;
 
     for (const auto& node : game.board) {
-        if (node->pos % game.cols == 0) std::cout << std::endl;
-        node->reveal();
-        std::cout << node->sprite << " ";
+        if (node->pos % game.cols == 0) std::cout << std::endl << std::setw(4) << std::left << node->pos / game.cols + 1  ;
+        std::cout << std::setw(3) << std::left << node->sprite;
     }
+
+	gameInput();
+	game.board.at(((userPos[0] - 1) * game.cols) + userPos[1] - 1)->reveal();
 }
+
+void Game::gameInput() {
+	while (true) {
+		consoleInput();
+
+		int x = userPos[0] - 1;
+		int y = userPos[1] - 1;
+		
+		if (x < 0 || y < 0) continue;
+		if (x >= board.cols || y >= board.rows) continue;
+
+		break;
+	}
+};
 
 void Game::endGame() {
 	exit(1);

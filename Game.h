@@ -27,6 +27,7 @@ public:
 private:
 	void playGame(const Board& game);
 	void consoleInput();
+	void gameInput();
 	void splitInput();
 	void endGame();
 	void swapScreen(CurrentScreen screen);

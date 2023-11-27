@@ -81,6 +81,9 @@ void UI::instructions() {
      7  ? ? ? ? ? ? ? ?
      8  ? ? ? ? ? ? ? ?
    )" << endl;
+
+    cout << "1: Return To Main Menu" << endl;
+    cout << "2: Difficulty Select" << endl;
 }
 
 void UI::difficultySelect() {
@@ -107,7 +110,10 @@ void UI::createCustomDifficulty() {
     /    \  \/|  |  \/  ___|   __\/  _ \ /     \ 
     \     \___|  |  /\___ \ |  | (  <_> )  Y Y  \
      \______  /____//____  >|__|  \____/|__|_|  /
-            \/           \/                   \/ )" << endl;
+            \/           \/                   \/ )" << endl << endl;
+    cout << "Enter the number of rows, cols then mines in the Custom Board" << endl;
+    cout << "Seperate each value by a space" << endl;
+    cout << "Example: 24 24 100" << endl;
 }
 
 void UI::loseScreen() {
