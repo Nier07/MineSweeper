@@ -21,7 +21,7 @@ public:
 	Node(int pos);
 	//reveal behaviour changes based on which child node is calling it
 	virtual bool reveal();
-	bool flag();
+	void flag();
 private:
 
 

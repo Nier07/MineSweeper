@@ -108,16 +108,45 @@ void Board::calculateAdjacency() {
 	}
 }
 
-//this function will be used to caculate mine adjacenecy and for autorevealing empty nodes
 bool Board::adjacencyCheck(int x, int horizontalCheck, Node::NodeType type) {
 	//fixes bug with the node at pos cols-1 detecting mines at pos 0 when checking top right node
 	if ((x + horizontalCheck) == -1) return false;
-	//checks if x is in within the bounds of the vector
-	if (x < 0) return false;
-	if (x >= this->size) return false;
+	if(!inBoard(x)) return false;
 	//checks that cells to the left or right of x are in the same row
 	if (x / this->cols != horizontalCheck / this->cols) return false;
 	//checks if x is the desired type
 	if (this->board.at(x)->type == type) return true;
 	return false;
+}
+
+bool Board::adjacencyCheck(int x, int horizontalCheck) {
+	if ((x + horizontalCheck) == -1) return false;
+	if (!inBoard(x)) return false;
+	//checks that cells to the left or right of x are in the same row
+	if (x / this->cols != horizontalCheck / this->cols) return false;
+
+	if (board.at(x)->isFlagged) return true;
+	if (board.at(x)->type == Node::empty && board.at(x)->reveal()) revealAdjacent(x);
+	board.at(x)->reveal();
+	return true;
+}
+
+bool Board::inBoard(int x) {
+	//checks if x is in within the bounds of the vector
+	if (x >= 0 && x < this->size) return true;
+	return false;
+}
+
+void Board::revealAdjacent(int x) {
+	int below = x + cols;
+	int above = x - cols;
+
+	adjacencyCheck(x + 1, x);
+	adjacencyCheck(x - 1, x);
+	adjacencyCheck(below + 1, below);
+	adjacencyCheck(below - 1, below);
+	adjacencyCheck(below, below);
+	adjacencyCheck(above + 1, above);
+	adjacencyCheck(above - 1, above);
+	adjacencyCheck(above, above);
 }

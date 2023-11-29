@@ -24,3 +24,11 @@ bool Node::reveal() {
 		return true;
 	}
 }
+
+void Node::flag(){
+	if (isRevealed) return;
+	if (isFlagged) sprite = "?";
+	else sprite = 'f';
+
+	isFlagged = !isFlagged;
+}

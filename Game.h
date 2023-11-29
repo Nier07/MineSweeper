@@ -15,19 +15,19 @@ public:
 
 	CurrentScreen screen;
 
-	Board board;
+	Board game;
 
 	std::string userInput;
 	int userPos[3];
-	bool systemExit;
+	bool systemExit, userFlag;
 
 	Game();
 	void startGame();
 
 private:
-	void playGame(const Board& game);
+	void playGame();
 	void consoleInput();
-	void gameInput();
+	void gameInput(const int&& x);
 	void splitInput();
 	void endGame();
 	void swapScreen(CurrentScreen screen);

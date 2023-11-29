@@ -25,11 +25,16 @@ public:
 	Board(Difficulty dif);
 	//custom Board constructor
 	Board(int rows, int cols, int mines);
+	bool inBoard(int x);
+	void revealAdjacent(int x);
 
 private:
+	std::vector<int> emptiesToReveal;
+
 	void setDifficulty(Difficulty dif);
 	void initBoard(int size);
 	void generateMines();
 	void calculateAdjacency();
 	bool adjacencyCheck(int x, int horizontalCheck, Node::NodeType type);
+	bool adjacencyCheck(int x, int horizontalCheck);
 };

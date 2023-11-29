@@ -22,10 +22,12 @@ void Game::splitInput() {
 	//for GUI naviagation just user userPos[0] for the actual game can use both userPos[0] and userPos[1];
 	std::istringstream ss(this->userInput);
 	std::string word;
+	userFlag = false;
 
 	int index = 0;
 	while (getline(ss, word, ' ')) {
-		if (word == "FLAG" || word == "QUIT") systemExit = true;
+		if (word == "QUIT") systemExit = true;
+		else if (word == "FLAG") userFlag = true;
 		else if (isNumber(word)) {
 			userPos[index] = stoi(word);
 			index++;
@@ -64,15 +66,15 @@ void Game::swapScreen(CurrentScreen screen) {
 				consoleInput();
 
 				if (userPos[0] == 1) {
-					this->board = Board(Board::easy);
+					this->game = Board(Board::easy);
 					screen = gameScreen;
 				}
 				if (userPos[0] == 2) {
-					this->board = Board(Board::medium);
+					this->game = Board(Board::medium);
 					screen = gameScreen;
 				}
 				if (userPos[0] == 3) {
-					this->board = Board(Board::hard);
+					this->game = Board(Board::hard);
 					screen = gameScreen;
 				}
 
@@ -82,11 +84,11 @@ void Game::swapScreen(CurrentScreen screen) {
 			case customDifficulty:
 				UI::createCustomDifficulty();
 				consoleInput();
-				this->board = Board(userPos[0], userPos[1], userPos[2]);
+				this->game = Board(userPos[0], userPos[1], userPos[2]);
 				screen = gameScreen;
 				break;
 			case gameScreen:
-				playGame(this->board);
+				playGame();
 				break;
 			case loseScreen:
 				UI::loseScreen();
@@ -103,7 +105,7 @@ void Game::swapScreen(CurrentScreen screen) {
 	}
 }
 
-void Game::playGame(const Board& game) {
+void Game::playGame() {
 	std::cout << std::setw(3) << std::left << "    " ;
 
 	for (int i = 1; i < game.cols + 1; i++) {
@@ -117,22 +119,22 @@ void Game::playGame(const Board& game) {
         std::cout << std::setw(3) << std::left << node->sprite;
     }
 
-	gameInput();
-	game.board.at(((userPos[0] - 1) * game.cols) + userPos[1] - 1)->reveal();
+	consoleInput();
+	gameInput((userPos[0] - 1) * game.cols + userPos[1] - 1);
 }
 
-void Game::gameInput() {
-	while (true) {
-		consoleInput();
+void Game::gameInput(const int&& x) {
 
-		int x = userPos[0] - 1;
-		int y = userPos[1] - 1;
-		
-		if (x < 0 || y < 0) continue;
-		if (x >= board.cols || y >= board.rows) continue;
-
-		break;
+	if (!game.inBoard(x)) return;
+	if (userFlag) {
+		game.board.at(x)->flag();
+		return;
 	}
+
+	if (game.board.at(x)->isFlagged) return;
+	game.board.at(x)->reveal();
+
+	if (game.board.at(x)->type == Node::empty) game.revealAdjacent(x);
 };
 
 void Game::endGame() {
