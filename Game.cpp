@@ -4,7 +4,7 @@
 #include <iomanip>
 
 Game::Game() {
-	this->systemExit = false;
+	systemExit = false;
 }
 
 void Game::startGame(){
@@ -14,31 +14,44 @@ void Game::startGame(){
 void Game::consoleInput() {
 	std::cout << std::endl << "Input: ";
 	std::getline(std::cin, userInput);
+	std::cout << std::endl;
 
 	splitInput();
 }
 
 void Game::splitInput() {
 	//for GUI naviagation just user userPos[0] for the actual game can use both userPos[0] and userPos[1];
-	std::istringstream ss(this->userInput);
+	std::istringstream ss(userInput);
 	std::string word;
 	userFlag = false;
+	//fills userPos with 0s
+	std::fill_n(userPos, 3, 0);
 
 	int index = 0;
+	//get each word from the string stream using a space as a delimiter
 	while (getline(ss, word, ' ')) {
-		if (word == "QUIT") systemExit = true;
+		if (word == "QUIT") endGame();
 		else if (word == "FLAG") userFlag = true;
+		//each number seperated by a space is added to the userPos array
 		else if (isNumber(word)) {
 			userPos[index] = stoi(word);
 			index++;
+			if (index > 3) consoleInput();
 		}
+		//asks for console output if user types something that isnt a number or FLAG/QUIT
 		else consoleInput();
 	}
 }
 
 bool Game::isNumber(const std::string& s) {
-	return !s.empty() && find_if(s.begin(), s.end(), [](unsigned char c) {
-	return !isdigit(c); }) == s.end();
+	//checks if a string is empty
+	if (s.empty()) return false;
+	//loops through the string and if a character is not a digit return false
+	for (const unsigned char& c : s) {
+		if (!isdigit(c)) return false;
+	}
+	//if all characters are digits then return true
+	return true;
 }
 
 void Game::swapScreen(CurrentScreen screen) {
@@ -65,16 +78,17 @@ void Game::swapScreen(CurrentScreen screen) {
 				UI::difficultySelect();
 				consoleInput();
 
+				//create board based on selected difficulty
 				if (userPos[0] == 1) {
-					this->game = Board(Board::easy);
+					game = Board(Board::easy);
 					screen = gameScreen;
 				}
 				if (userPos[0] == 2) {
-					this->game = Board(Board::medium);
+					game = Board(Board::medium);
 					screen = gameScreen;
 				}
 				if (userPos[0] == 3) {
-					this->game = Board(Board::hard);
+					game = Board(Board::hard);
 					screen = gameScreen;
 				}
 
@@ -84,19 +98,26 @@ void Game::swapScreen(CurrentScreen screen) {
 			case customDifficulty:
 				UI::createCustomDifficulty();
 				consoleInput();
-				this->game = Board(userPos[0], userPos[1], userPos[2]);
+				//create board based on inputted rows, cols, mines
+				game = Board(userPos[0], userPos[1], userPos[2]);
 				screen = gameScreen;
 				break;
 			case gameScreen:
 				playGame();
 				break;
 			case loseScreen:
+				printGame();
 				UI::loseScreen();
 				consoleInput();
+				if (userPos[0] == 1) screen = difficultySelect;
+				if (userPos[0] == 2) screen = mainMenu;
 				break;
 			case winScreen:
+				printGame();
 				UI::winScreen();
 				consoleInput();
+				if (userPos[0] == 1) screen = difficultySelect;
+				if (userPos[0] == 2) screen = mainMenu;
 				break;
 			default:
 				systemExit = true;
@@ -106,35 +127,69 @@ void Game::swapScreen(CurrentScreen screen) {
 }
 
 void Game::playGame() {
-	std::cout << std::setw(3) << std::left << "    " ;
-
-	for (int i = 1; i < game.cols + 1; i++) {
-        std::cout << std::setw(3) << std::left << i ;
-    }
-
-    std::cout << std::endl;
-
-    for (const auto& node : game.board) {
-        if (node->pos % game.cols == 0) std::cout << std::endl << std::setw(4) << std::left << node->pos / game.cols + 1  ;
-        std::cout << std::setw(3) << std::left << node->sprite;
-    }
-
+	checkWin();
+	printGame();
 	consoleInput();
-	gameInput((userPos[0] - 1) * game.cols + userPos[1] - 1);
+	//wanted to try passing rvalues into a function
+	gameInput((userPos[1] - 1) * game.cols + userPos[0] - 1);
+}
+
+void Game::checkWin() {
+	int winCounter = 0;
+	//checks if each node in gameboard is not a mine and is revealed
+	//if it is a nonmine revealed node increase wincounter
+	for (const auto& node : game.board) {
+		if (node->type != Node::mine && node->isRevealed) winCounter++;
+	}
+	//when wincounter equals the size of the board - the mines reval the board and swap to win screen
+	//this means that all non mine squares have been revealed
+	if (winCounter == game.size - game.mines && winCounter > 0) {
+		game.revealAll();
+		swapScreen(winScreen);
+	}
+}
+
+void Game::printGame() {
+	//spaces for formatting
+	std::cout << std::setw(3) << std::left << "    ";
+
+	//prints column numbers
+	for (int i = 1; i < game.cols + 1; i++) {
+		std::cout << std::setw(3) << std::left << i;
+	}
+
+	std::cout << std::endl;
+
+	//prints the gameboard and row numbers
+	for (const auto& node : game.board) {
+		if (node->pos % game.cols == 0) std::cout << std::endl << std::setw(4) << std::left << node->pos / game.cols + 1;
+		std::cout << std::setw(3) << std::left << node->sprite;
+	}
+
+	std::cout << std::endl;
 }
 
 void Game::gameInput(const int&& x) {
-
+	//checks if x is in the board
 	if (!game.inBoard(x)) return;
+	//if the user typed FLAG then flags the position
 	if (userFlag) {
 		game.board.at(x)->flag();
 		return;
 	}
-
+	//checks if node at position x is not a flagged node
 	if (game.board.at(x)->isFlagged) return;
+	//reveals node at position x
 	game.board.at(x)->reveal();
 
+	//if the revealed node is empty it will autoreveal tiles around it
 	if (game.board.at(x)->type == Node::empty) game.revealAdjacent(x);
+	//if the revealed node is a mine it will reveal the board and swap to the lose screen
+	if (game.board.at(x)->type == Node::mine) {
+		game.revealAll();
+		swapScreen(loseScreen);
+	}
+
 };
 
 void Game::endGame() {

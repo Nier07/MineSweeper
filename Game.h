@@ -23,13 +23,15 @@ public:
 
 	Game();
 	void startGame();
+	void endGame();
 
 private:
+	void checkWin();
+	void printGame();
 	void playGame();
 	void consoleInput();
 	void gameInput(const int&& x);
 	void splitInput();
-	void endGame();
 	void swapScreen(CurrentScreen screen);
 	bool isNumber(const std::string& s);
 };

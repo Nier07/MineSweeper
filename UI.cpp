@@ -41,17 +41,17 @@ void UI::instructions() {
         1 2 3 4 5 6 7 8
 
      1  ? ? ? ? ? ? ? ?
-     2  ? ? f f f ? ? ?
-     3  ? ? 2 3 2 ? ? ?
-     4  ? ? 1 0 1 ? ? ?
-     5  ? ? 2 1 2 ? ? ?
+     2  ? ? ? ? ? ? ? ?
+     3  ? ? ? ? ? ? ? ?
+     4  ? ? ? ? ? ? ? ?
+     5  ? ? ? ? ? ? ? ?
      6  ? ? ? ? ? ? ? ?
      7  ? ? ? ? ? ? ? ?
      8  ? ? ? ? ? ? ? ?
     )" << endl;
     cout << "To select a square type the x and y coordinates as the following x y"
         << endl;
-    cout << "For example if you wanted to select a square in the middle type 5 5"
+    cout << "For example if you wanted to select a square in the middle type 4 4"
         << endl
         << endl;
     cout << "When you reveal a square it will either have a mine or a number"
@@ -65,7 +65,7 @@ void UI::instructions() {
     cout << "This means there could be a mine directly to the left, right, top, "
         "bottom, and diagonal to that square"
         << endl;
-    cout << "If you think you know the position of a mine type flag x, y in "
+    cout << "If you think you know the position of a mine type FLAG x y in "
         "order to keep track of mine positions"
         << endl;
     cout << "Below is an example gameboard showing this: " << endl;
@@ -135,7 +135,7 @@ void UI::winScreen() {
     _________                                     __        .__          __  .__                      
     \_   ___ \  ____   ____    ________________ _/  |_ __ __|  | _____ _/  |_|__| ____   ____   ______
     /    \  \/ /  _ \ /    \  / ___\_  __ \__  \\   __\  |  \  | \__  \\   __\  |/  _ \ /    \ /  ___/
-    \     \___(  <_> )   |  \/ /_/  >  | \// __ \|  | |  |  /  |__/ __ \|  | |  (  <_> )   |       \\___ \ 
+    \     \___(  <_> )   |  \/ /_/  >  | \// __ \|  | |  |  /  |__/ __ \|  | |  (  <_> )   |   \\___ \ 
      \______  /\____/|___|  /\___  /|__|  (____  /__| |____/|____(____  /__| |__|\____/|___|  /____  >
             \/            \//_____/            \/                     \/                    \/     \/ 
   )";

@@ -1,30 +1,27 @@
 #include "Mine.h"
 
 Mine::Mine() {
-	this->type = mine;
-	this->pos = 0;
-	this->isRevealed = false;
-	this->isFlagged = false;
-	this->sprite = "?";
+	type = mine;
+	pos = 0;
+	isRevealed = false;
+	isFlagged = false;
+	sprite = "?";
 }
 
 Mine::Mine(int pos) {
-	this->type = mine;
+	type = mine;
 	this->pos = pos;
-	this->isRevealed = false;
-	this->isFlagged = false;
-	this->sprite = "?";
+	isRevealed = false;
+	isFlagged = false;
+	sprite = "?";
 }
 
 bool Mine::reveal(){
-	if (isRevealed) {
-		std::cout << "Mine Revealed and game not over";
-		//end game
-		return false;
-	}
+	//checks if a ndoe is already revealed and changes sprite if not
+	if (isRevealed) return false;
 	else {
-		this->isRevealed = true;
-		this->sprite = "x";
-		return true;
+		isRevealed = true;
+		sprite = "x";
+		return isRevealed;
 	}
 }

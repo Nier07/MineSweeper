@@ -3,18 +3,19 @@
 Clue::Clue(int adjacentMines, int pos){
 	this->adjacentMines = adjacentMines;
 	this->pos = pos;
-	this->type = clue;
-	this->isRevealed = false;
-	this->isFlagged = false;
-	this->sprite = "?";
+	type = clue;
+	isRevealed = false;
+	isFlagged = false;
+	sprite = "?";
 }
 
 bool Clue::reveal() {
 	//checks if node is already revealed
 	if (isRevealed) return false;
 	else {
-		this->isRevealed = true;
-		this->sprite = std::to_string(this->adjacentMines);
+		//sets sprite to the number of adjacent mines of this node
+		isRevealed = true;
+		sprite = std::to_string(adjacentMines);
 		return true;
 	}
 }

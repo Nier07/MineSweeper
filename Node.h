@@ -22,8 +22,5 @@ public:
 	//reveal behaviour changes based on which child node is calling it
 	virtual bool reveal();
 	void flag();
-private:
-
-
 
 };
