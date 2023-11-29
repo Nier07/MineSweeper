@@ -6,7 +6,7 @@ Board::Board() {
 	rows = 0;
 	cols = 0;
 	mines = 0;
-	size = rows * cols;
+	size = 0;
 	dif = empty;
 }
 
@@ -17,10 +17,8 @@ Board::Board(Difficulty dif) {
 
 //custom difficulty takes user input
 Board::Board(int rows, int cols, int mines) {
-	if (rows > 100) this->rows = 100;
-	else this->rows = rows;
-	if (cols > 70) this->cols = 70;
-	else this->cols = cols;
+	this->rows = (rows > 100) ? 100 : rows;
+	this->cols = (cols > 70) ? 70 : cols;
 
 	size = this->rows * this->cols;
 	if (mines > size)this->mines = size;
@@ -114,25 +112,19 @@ bool Board::adjacencyCheck(int x, int horizontalCheck, Node::NodeType type) {
 	if(!inBoard(x)) return false;
 	//checks that cells to the left or right of x are in the same row
 	if (x / cols != horizontalCheck / cols) return false;
+	if (board.at(x)->isFlagged) return false;
 	//checks if x is the desired type
 	if (board.at(x)->type == type) return true;
 	return false;
 }
 
 bool Board::adjacencyCheck(int x, int horizontalCheck) {
-	if ((x + horizontalCheck) == -1) return false;
 	if (!inBoard(x)) return false;
+	if ((x + horizontalCheck) == -1) return false;
 	if (x / cols != horizontalCheck / cols) return false;
 	//does not reveal flaggged nodes
 	if (board.at(x)->isFlagged) return false;
-	revealRecursion(x);
 	return true;
-}
-
-void Board::revealRecursion(int x) {
-	//when an adjacent node is empty and revealed then call revealAdjacent with that node
-	if (board.at(x)->type == Node::empty && board.at(x)->reveal()) revealAdjacent(x);
-	board.at(x)->reveal();
 }
 
 bool Board::inBoard(int x) {
@@ -141,19 +133,41 @@ bool Board::inBoard(int x) {
 	return false;
 }
 
-void Board::revealAdjacent(int x) {
-	int below = x + cols;
-	int above = x - cols;
+bool Board::checkEmpty(int x) {
+	//returns true if the node at x is empty and hasnt been checked before
+	//reveal only returns true the first time its called by a specific node
+	if (board.at(x)->type == Node::empty && board.at(x)->reveal()) return true;
+	board.at(x)->reveal();
+	return false;
+}
 
-	//checks adjacency and reveals the nodes if adjacent
-	adjacencyCheck(x + 1, x);
-	adjacencyCheck(x - 1, x);
-	adjacencyCheck(below + 1, below);
-	adjacencyCheck(below - 1, below);
-	adjacencyCheck(below, below);
-	adjacencyCheck(above + 1, above);
-	adjacencyCheck(above - 1, above);
-	adjacencyCheck(above, above);
+//this function only gets called if a empty node is revealed by player input
+void Board::revealAdjacent(int x) {
+	//pushes inital position to stack
+	emptyNodeStack.push(x);
+
+	int below, above, current;
+
+	while (!emptyNodeStack.empty()) {
+		//sets x to variable at top of stack
+		current = emptyNodeStack.top();
+
+		//deletes the top of the stack
+		emptyNodeStack.pop();
+
+		below = current + cols;
+		above = current - cols;
+
+		//checks adjacency and reveals the nodes if adjacent then pushes that position to the stack for recursion if it is an empty node
+		if (adjacencyCheck(current + 1, current) && checkEmpty(current + 1)) emptyNodeStack.push(current + 1);
+		if (adjacencyCheck(current - 1, current) && checkEmpty(current - 1)) emptyNodeStack.push(current - 1);
+		if (adjacencyCheck(below + 1, below) && checkEmpty(below + 1)) emptyNodeStack.push(below + 1);
+		if (adjacencyCheck(below - 1, below) && checkEmpty(below - 1)) emptyNodeStack.push(below - 1);
+		if (adjacencyCheck(below, below) && checkEmpty(below)) emptyNodeStack.push(below);
+		if (adjacencyCheck(above + 1, above) && checkEmpty(above + 1)) emptyNodeStack.push(above + 1);
+		if (adjacencyCheck(above - 1, above) && checkEmpty(above - 1))  emptyNodeStack.push(above - 1);
+		if (adjacencyCheck(above, above) && checkEmpty(above)) emptyNodeStack.push(above);
+	}
 }
 
 void Board::revealAll() {

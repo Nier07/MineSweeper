@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <stack>
 #include "Node.h"
 
 class Board {
@@ -35,7 +36,12 @@ public:
 	void revealAll();
 
 private:
-	void revealRecursion(int x);
+	//i need to use this instead of recursion because if i have a large custom board
+	// eg 70 by 100 with no mines the whole board will autofill as all nodes are empty
+	//when using a recursive function this would lead to a stack overflow even with a few optimisations
+	//and i didnt really want to implement recursion depth as that would not properly autofill
+	std::stack<int> emptyNodeStack;
+	bool checkEmpty(int x);
 	void setDifficulty(Difficulty dif);
 	void generateMines();
 	void calculateAdjacency();
