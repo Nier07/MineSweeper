@@ -16,10 +16,14 @@ void Game::consoleInput() {
 	std::getline(std::cin, userInput);
 	std::cout << std::endl;
 
-	splitInput();
+	bool continueReccursion = splitInput();
+
+	if (!continueReccursion) return;
+
+	consoleInput();
 }
 
-void Game::splitInput() {
+bool Game::splitInput() {
 	//for GUI naviagation just user userPos[0] for the actual game can use both userPos[0] and userPos[1];
 	std::istringstream ss(userInput);
 	std::string word;
@@ -36,11 +40,12 @@ void Game::splitInput() {
 		else if (isNumber(word)) {
 			userPos[index] = stoi(word);
 			index++;
-			if (index > 3) consoleInput();
+			if (index > 3) return true;
 		}
 		//asks for console output if user types something that isnt a number or FLAG/QUIT
-		else consoleInput();
+		else return true;
 	}
+	return false;
 }
 
 bool Game::isNumber(const std::string& s) {
@@ -49,6 +54,7 @@ bool Game::isNumber(const std::string& s) {
 	//loops through the string and if a character is not a digit return false
 	for (const unsigned char& c : s) {
 		if (!isdigit(c)) return false;
+		if (c == '-') return false;
 	}
 	//if all characters are digits then return true
 	return true;
@@ -160,13 +166,15 @@ void Game::printGame() {
 
 	std::cout << std::endl;
 
+	int flagCount = 0;
 	//prints the gameboard and row numbers
 	for (const auto& node : game.board) {
 		if (node->pos % game.cols == 0) std::cout << std::endl << std::setw(4) << std::left << node->pos / game.cols + 1;
+		if (node->isFlagged) flagCount++;
 		std::cout << std::setw(3) << std::left << node->sprite;
 	}
 
-	std::cout << std::endl;
+	std::cout << std::endl <<  "Mines Remaining: " << game.mines - flagCount << std::endl;
 }
 
 void Game::gameInput(const int&& x) {

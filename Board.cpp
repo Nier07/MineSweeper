@@ -20,6 +20,9 @@ Board::Board(int rows, int cols, int mines) {
 	this->rows = (rows > 100) ? 100 : rows;
 	this->cols = (cols > 70) ? 70 : cols;
 
+	this->rows = (rows <= 0) ? 1 : rows;
+	this->cols = (cols <= 0) ? 1 : cols;
+
 	size = this->rows * this->cols;
 	if (mines > size)this->mines = size;
 	else this->mines = mines;
@@ -39,12 +42,12 @@ void Board::setDifficulty(Difficulty dif) {
 		case medium:
 			rows = 8;
 			cols = 8;
-			mines = 15;
+			mines = 12;
 			break;
 		case hard:
 			rows = 10;
 			cols = 10;
-			mines = 25;
+			mines = 20;
 			break;
 		default:
 			std::cout << "Passed Non-existant Difficulty Type" << std::endl;
@@ -133,7 +136,7 @@ bool Board::inBoard(int x) {
 	return false;
 }
 
-bool Board::checkEmpty(int x) {
+bool Board::revealEmpty(int x) {
 	//returns true if the node at x is empty and hasnt been checked before
 	//reveal only returns true the first time its called by a specific node
 	if (board.at(x)->type == Node::empty && board.at(x)->reveal()) return true;
@@ -141,7 +144,7 @@ bool Board::checkEmpty(int x) {
 	return false;
 }
 
-//this function only gets called if a empty node is revealed by player input
+//this function only gets called if an empty node is revealed by player input
 void Board::revealAdjacent(int x) {
 	//pushes inital position to stack
 	emptyNodeStack.push(x);
@@ -159,14 +162,14 @@ void Board::revealAdjacent(int x) {
 		above = current - cols;
 
 		//checks adjacency and reveals the nodes if adjacent then pushes that position to the stack for recursion if it is an empty node
-		if (adjacencyCheck(current + 1, current) && checkEmpty(current + 1)) emptyNodeStack.push(current + 1);
-		if (adjacencyCheck(current - 1, current) && checkEmpty(current - 1)) emptyNodeStack.push(current - 1);
-		if (adjacencyCheck(below + 1, below) && checkEmpty(below + 1)) emptyNodeStack.push(below + 1);
-		if (adjacencyCheck(below - 1, below) && checkEmpty(below - 1)) emptyNodeStack.push(below - 1);
-		if (adjacencyCheck(below, below) && checkEmpty(below)) emptyNodeStack.push(below);
-		if (adjacencyCheck(above + 1, above) && checkEmpty(above + 1)) emptyNodeStack.push(above + 1);
-		if (adjacencyCheck(above - 1, above) && checkEmpty(above - 1))  emptyNodeStack.push(above - 1);
-		if (adjacencyCheck(above, above) && checkEmpty(above)) emptyNodeStack.push(above);
+		if (adjacencyCheck(current + 1, current) && revealEmpty(current + 1)) emptyNodeStack.push(current + 1);
+		if (adjacencyCheck(current - 1, current) && revealEmpty(current - 1)) emptyNodeStack.push(current - 1);
+		if (adjacencyCheck(below + 1, below) && revealEmpty(below + 1)) emptyNodeStack.push(below + 1);
+		if (adjacencyCheck(below - 1, below) && revealEmpty(below - 1)) emptyNodeStack.push(below - 1);
+		if (adjacencyCheck(below, below) && revealEmpty(below)) emptyNodeStack.push(below);
+		if (adjacencyCheck(above + 1, above) && revealEmpty(above + 1)) emptyNodeStack.push(above + 1);
+		if (adjacencyCheck(above - 1, above) && revealEmpty(above - 1))  emptyNodeStack.push(above - 1);
+		if (adjacencyCheck(above, above) && revealEmpty(above)) emptyNodeStack.push(above);
 	}
 }
 

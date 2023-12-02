@@ -41,7 +41,7 @@ private:
 	//when using a recursive function this would lead to a stack overflow even with a few optimisations
 	//and i didnt really want to implement recursion depth as that would not properly autofill
 	std::stack<int> emptyNodeStack;
-	bool checkEmpty(int x);
+	bool revealEmpty(int x);
 	void setDifficulty(Difficulty dif);
 	void generateMines();
 	void calculateAdjacency();

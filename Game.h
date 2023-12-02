@@ -18,7 +18,7 @@ public:
 	Board game;
 
 	std::string userInput;
-	int userPos[3];
+	unsigned int userPos[3];
 	bool systemExit, userFlag;
 
 	Game();
@@ -31,7 +31,7 @@ private:
 	void playGame();
 	void consoleInput();
 	void gameInput(const int&& x);
-	void splitInput();
+	bool splitInput();
 	void swapScreen(CurrentScreen screen);
 	bool isNumber(const std::string& s);
 };
