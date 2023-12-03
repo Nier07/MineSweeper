@@ -136,8 +136,7 @@ void Game::playGame() {
 	checkWin();
 	printGame();
 	consoleInput();
-	//wanted to try passing rvalues into a function
-	gameInput((userPos[1] - 1) * game.cols + userPos[0] - 1);
+	gameInput();
 }
 
 void Game::checkWin() {
@@ -177,9 +176,15 @@ void Game::printGame() {
 	std::cout << std::endl <<  "Mines Remaining: " << game.mines - flagCount << std::endl;
 }
 
-void Game::gameInput(const int&& x) {
+void Game::gameInput() {
+	//checks if users x pos is greater than the amount of columns in the game
+	if (userPos[0] > game.cols) return;
+	//gets the position in the vector of the node the user inputed
+	int x = ((userPos[1] - 1) * game.cols) + userPos[0] - 1;
 	//checks if x is in the board
 	if (!game.inBoard(x)) return;
+	std::cout << "Check: " << x << std::endl;
+
 	//if the user typed FLAG then flags the position
 	if (userFlag) {
 		game.board.at(x)->flag();

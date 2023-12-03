@@ -30,7 +30,7 @@ private:
 	void printGame();
 	void playGame();
 	void consoleInput();
-	void gameInput(const int&& x);
+	void gameInput();
 	bool splitInput();
 	void swapScreen(CurrentScreen screen);
 	bool isNumber(const std::string& s);
